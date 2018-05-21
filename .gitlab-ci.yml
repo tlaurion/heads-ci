@@ -4,6 +4,9 @@ stages:
 
 build:
   stage: build
+  cache:
+    paths:
+      - heads/**/*
   script:
     - git clone https://github.com/osresearch/heads
     - cd heads
