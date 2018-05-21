@@ -6,9 +6,9 @@ build:
   stage: build
   cache:
     paths:
-      - heads/**/*
+      - heads/
   script:
-    - git clone https://github.com/osresearch/heads
+    - ./gitorclone.sh https://github.com/osresearch/heads heads
     - cd heads
     - make BOARD=x230
   artifacts:
