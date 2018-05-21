@@ -9,6 +9,7 @@ build:
     - apt install -y build-essential zlib1g-dev uuid-dev libdigest-sha-perl bc  bzip2 bison flex git gnupg iasl m4 nasm patch python wget gnat git
     - git clone https://github.com/osresearch/heads
     - cd heads
+    - make BOARD=x230
   artifacts:
     paths:
       - heads/build/x230/coreboot.rom
