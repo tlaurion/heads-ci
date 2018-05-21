@@ -1,4 +1,4 @@
-image: ubuntu:xenial
+image: nemanjan00/heads-ci:latest
 stages:
   - build
 
