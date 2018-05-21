@@ -11,5 +11,5 @@ build:
     - cd heads
   artifacts:
     paths:
-      heads/build/x230/coreboot.rom
+      - heads/build/x230/coreboot.rom
 
