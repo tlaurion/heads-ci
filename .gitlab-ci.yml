@@ -8,7 +8,6 @@ build:
     paths:
       - heads/
   script:
-    - apt-get update ; apt-get install -y cpio
     - ./gitorclone.sh https://github.com/osresearch/heads heads
     - cd heads
     - make BOARD=x230
