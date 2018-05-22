@@ -4,7 +4,7 @@ LABEL maintainer "Nemanja Nedeljković <nemanjan00@gmail.com>"
 
 RUN apt-get -y update
 RUN apt install -y build-essential
-RUN apt-install -y zlib1g-dev
+RUN apt install -y zlib1g-dev
 RUN apt install -y uuid-dev
 RUN apt install -y libdigest-sha-perl
 RUN apt install -y bc
