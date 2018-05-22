@@ -3,6 +3,7 @@ FROM ubuntu:xenial
 LABEL maintainer "Nemanja Nedeljković <nemanjan00@gmail.com>"
 
 RUN apt-get -y update
+
 RUN apt install -y build-essential
 RUN apt install -y zlib1g-dev
 RUN apt install -y uuid-dev
