@@ -11,6 +11,7 @@ build:
     - ./gitorclone.sh https://github.com/osresearch/heads heads
     - cd heads
     - make BOARD=x230
+    - make BOARD=x230-flash
     - make BOARD=qemu-linuxboot
     - make BOARD=qemu-coreboot
   artifacts:
