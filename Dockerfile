@@ -23,4 +23,5 @@ RUN apt install -y gnat
 RUN apt install -y git
 RUN apt install -y cpio
 RUN apt install -y ccache
+RUN apt install -y libelf-dev
 
