@@ -16,5 +16,8 @@ build:
     - make BOARD=qemu-coreboot
   artifacts:
     paths:
-      - heads/build
+      - heads/build/x230/coreboot.rom
+      - heads/build/x230-flash/coreboot.rom
+      - heads/build/qemu-linuxboot/linuxboot.rom
+      - heads/build/qemu-coreboot/coreboot.rom
 
