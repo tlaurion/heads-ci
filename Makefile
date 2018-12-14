@@ -39,6 +39,9 @@ DATE=`date --rfc-3339=seconds`
 BOARD		?= qemu-coreboot
 CONFIG		:= $(pwd)/boards/$(BOARD)/$(BOARD).config
 
+# Create the board output directory if it doesn't already exist
+BOARD_LOG	:= $(shell mkdir -p "$(build)/$(BOARD)" )
+
 ifneq "y" "$(shell [ -r '$(CONFIG)' ] && echo y)"
 $(error $(CONFIG): board configuration does not exist)
 endif
@@ -231,7 +234,7 @@ define define_module =
     # this case, since we don't have a stable version to compare against.
     $(build)/$($1_base_dir)/.canary:
 	git clone $($1_repo) "$(build)/$($1_base_dir)"
-	cd $(build)/$($1_base_dir) && git submodule update --init --checkout
+	git -C "$(build)/$($1_base_dir)" checkout $($1_rev)
 	if [ -r patches/$1.patch ]; then \
 		( cd $(build)/$($1_base_dir) ; patch -p1 ) \
 			< patches/$1.patch \
