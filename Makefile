@@ -3,7 +3,7 @@ all:
 
 ifneq "$(TOOLCHAIN)" ""
 $(info Using $(TOOLCHAIN) for cross compiler and packages)
-packages	?= $(TOOLCHAIN)/packages
+packages	:= $(TOOLCHAIN)/packages
 CROSS		:= $(TOOLCHAIN)/crossgcc/x86_64-linux-musl/bin/x86_64-linux-musl-
 endif
 
@@ -22,8 +22,6 @@ CPUS		:= $(shell nproc)
 # Create the log directory if it doesn't already exist
 BUILD_LOG := $(shell mkdir -p "$(log_dir)" )
 
-WGET ?= wget
-
 # Check that we have a correct version of make
 # that matches at least the major version
 LOCAL_MAKE_VERSION := $(shell $(MAKE) --version | head -1 | cut -d' ' -f3)
@@ -31,13 +29,13 @@ include modules/make
 
 ifneq "" "$(filter $(make_version)%,$(LOCAL_MAKE_VERSION))"
 
-# Timestamps should be in ISO format
-DATE=`date --rfc-3339=seconds`
-
 # This is the correct version of Make
 
 BOARD		?= qemu-coreboot
 CONFIG		:= $(pwd)/boards/$(BOARD)/$(BOARD).config
+
+# Create the board output directory if it doesn't already exist
+BOARD_LOG	:= $(shell mkdir -p "$(build)/$(BOARD)" )
 
 ifneq "y" "$(shell [ -r '$(CONFIG)' ] && echo y)"
 $(error $(CONFIG): board configuration does not exist)
@@ -58,15 +56,8 @@ GIT_STATUS	:= $(shell \
 		echo dirty ; \
 	fi)
 
-# record the build date / git hashes and other files here
-HASHES		:= $(build)/$(BOARD)/hashes.txt
-
-# Create the board output directory if it doesn't already exist
-BOARD_LOG	:= $(shell \
-	mkdir -p "$(build)/$(BOARD)" ; \
-	echo "$(DATE) $(GIT_HASH) $(GIT_STATUS)" > "$(HASHES)" ; \
-)
-
+# Timestamps should be in ISO format
+DATE=`date --rfc-3339=seconds`
 
 # If V is set in the environment, do not redirect the tee
 # command to /dev/null.
@@ -136,9 +127,6 @@ else
 $(error "$(BOARD): neither CONFIG_COREBOOT nor CONFIG_LINUXBOOT is set?")
 endif
 
-all:
-	@sha256sum $< | tee -a "$(HASHES)"
-
 # Disable all built in rules
 .INTERMEDIATE:
 .SUFFIXES:
@@ -192,15 +180,6 @@ define do-cpio =
 		echo "$(DATE) UNCHANGED $(1:$(pwd)/%=%)" ; \
 		rm "$1.tmp" ; \
 	fi
-	@sha256sum "$1" | tee -a "$(HASHES)"
-	$(call do,HASHES   , $1,\
-		( cd "$2"; \
-		echo "-----" ; \
-		find . -type f -print0 \
-		| xargs -0 sha256sum ; \
-		echo "-----" ; \
-		) >> "$(HASHES)" \
-	)
 endef
 
 define do-copy =
@@ -231,6 +210,7 @@ define define_module =
     # this case, since we don't have a stable version to compare against.
     $(build)/$($1_base_dir)/.canary:
 	git clone $($1_repo) "$(build)/$($1_base_dir)"
+	git -C "$(build)/$($1_base_dir)" checkout $($1_rev)
 	cd $(build)/$($1_base_dir) && git submodule update --init --checkout
 	if [ -r patches/$1.patch ]; then \
 		( cd $(build)/$($1_base_dir) ; patch -p1 ) \
@@ -252,10 +232,10 @@ define define_module =
     # wget creates it early, so we have to cleanup if it fails
     $(packages)/$($1_tar):
 	$(call do,WGET,$($1_url),\
-		if ! $(WGET) -O "$$@.tmp" $($1_url) ; then \
+		if ! wget -O "$$@" $($1_url) ; then \
+			rm -f "$$@" ; \
 			exit 1 ; \
-		fi ; \
-		mv "$$@.tmp" "$$@" \
+		fi \
 	)
     $(packages)/.$1-$($1_version)_verify: $(packages)/$($1_tar)
 	echo "$($1_hash)  $$^" | sha256sum --check -
@@ -415,8 +395,6 @@ bin_modules-$(CONFIG_PCIUTILS) += pciutils
 bin_modules-$(CONFIG_FLASHROM) += flashrom
 bin_modules-$(CONFIG_CRYPTSETUP) += cryptsetup
 bin_modules-$(CONFIG_GPG) += gpg
-bin_modules-$(CONFIG_GPG2) += gpg2
-bin_modules-$(CONFIG_PINENTRY) += pinentry
 bin_modules-$(CONFIG_LVM2) += lvm2
 bin_modules-$(CONFIG_DROPBEAR) += dropbear
 bin_modules-$(CONFIG_FLASHTOOLS) += flashtools
@@ -496,11 +474,11 @@ $(build)/$(initrd_dir)/initrd.cpio.xz: $(initrd-y)
 	)
 	@if ! cmp --quiet "$@.tmp" "$@" ; then \
 		mv "$@.tmp" "$@" ; \
+		sha256sum "$(@:$(pwd)/%=%)" ; \
 	else \
 		echo "$(DATE) UNCHANGED $(@:$(pwd)/%=%)" ; \
 		rm "$@.tmp" ; \
 	fi
-	@sha256sum "$(@:$(pwd)/%=%)" | tee -a "$(HASHES)"
 
 #
 # The heads.cpio is built from the initrd directory in the
@@ -579,40 +557,30 @@ $(eval $(shell echo >&2 "$(DATE) Wrong make detected: $(LOCAL_MAKE_VERSION)"))
 HEADS_MAKE := $(build)/$(make_dir)/make
 
 # Once we have a proper Make, we can just pass arguments into it
-all linux cpio run: $(HEADS_MAKE)
+all bootstrap linux cpio: $(HEADS_MAKE)
 	LANG=C MAKE=$(HEADS_MAKE) $(HEADS_MAKE) $(MAKE_JOBS) $@
-%.clean %.vol %.menuconfig: $(HEADS_MAKE)
+%.clean %.vol: $(HEADS_MAKE)
 	LANG=C MAKE=$(HEADS_MAKE) $(HEADS_MAKE) $@
 
-bootstrap: $(HEADS_MAKE)
-
 # How to download and build the correct version of make
-$(packages)/$(make_tar):
-	$(WGET) -O "$@.tmp" "$(make_url)"
-	if ! echo "$(make_hash)  $@.tmp" | sha256sum --check -; then \
-		exit 1 ; \
-	fi
-	mv "$@.tmp" "$@"
-
-$(build)/$(make_dir)/.extract: $(packages)/$(make_tar)
-	tar xf "$<" -C "$(build)"
-	touch "$@"
-
-$(build)/$(make_dir)/.patch: patches/make-$(make_version).patch $(build)/$(make_dir)/.extract
-	( cd "$(dir $@)" ; patch -p1 ) < "$<"
-	touch "$@"
-
-$(build)/$(make_dir)/.configured: $(build)/$(make_dir)/.patch
-	cd "$(dir $@)" ; \
-	./configure 2>&1 \
-	| tee "$(log_dir)/make.configure.log" \
-	$(VERBOSE_REDIRECT)
-	touch "$@"
-
-$(HEADS_MAKE): $(build)/$(make_dir)/.configured
+$(HEADS_MAKE): $(build)/$(make_dir)/Makefile
 	make -C "$(dir $@)" $(MAKE_JOBS) \
 		2>&1 \
 		| tee "$(log_dir)/make.log" \
 		$(VERBOSE_REDIRECT)
+
+$(build)/$(make_dir)/Makefile: $(packages)/$(make_tar)
+	tar xf "$<" -C build/
+	cd "$(dir $@)" ; ./configure \
+		2>&1 \
+		| tee "$(log_dir)/make.configure.log" \
+		$(VERBOSE_REDIRECT)
+
+$(packages)/$(make_tar):
+	wget -O "$@" "$(make_url)"
+	if ! echo "$(make_hash)  $@" | sha256sum --check -; then \
+		$(MV) "$@" "$@.failed"; \
+		false; \
+	fi
 
 endif
