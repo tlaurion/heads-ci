@@ -30,6 +30,10 @@ enable_sdcard()
         busybox insmod /lib/modules/mmc_block.ko \
         || die "mmc_block: module load failed"
       fi
+      if ! lsmod | grep -q cqhci; then
+        busybox insmod /lib/modules/cqhci.ko \
+        || die "cqhci: module load failed"
+      fi
       if ! lsmod | grep -q sdhci; then
         busybox insmod /lib/modules/sdhci.ko \
         || die "sdhci: module load failed"
@@ -49,6 +53,10 @@ enable_sdcard()
       if ! lsmod | grep -q mmc_block; then
         insmod /lib/modules/mmc_block.ko \
         || die "mmc_block: module load failed"
+      fi
+      if ! lsmod | grep -q cqhci; then
+        busybox insmod /lib/modules/cqhci.ko \
+        || die "cqhci: module load failed"
       fi
       if ! lsmod | grep -q sdhci; then
         insmod /lib/modules/sdhci.ko \

@@ -483,7 +483,7 @@ read_oem_files()
       if [ -n "$prompt_user_provisioning" ] && [ "$prompt_user_provisioning" -eq 1 ];then
 
         if (whiptail $CONFIG_WARNING_BG_COLOR --title "OEM Reownership Wizard lacks some provisioning information" \
-          --yesno "Would you like to feed the OEM Reownership Wizard once with all required\ninformation to automate its process?\n\n Those will be saved securely on OEM provided USB disk encrypted container.\n\n Provisioning those secrets here will automate Reownership Wizard process.\n  Those information will be stored under /media/oem-provisioning.\n\nOtherwise, you will be prompted to enter them several times manually.\nYou won't either have an external backup of those information in case\nthey were forgotten.\n\nContinue with one time OEM Reownership information provisioning?" 30 90) then
+          --yesno "Would you like to feed the OEM Reownership Wizard once with all required\ninformation to automate its process?\n\n Those will be saved securely on OEM provided sdcard disk encrypted container.\n\n Provisioning those secrets here will automate Reownership Wizard process.\n  Those information will be stored under /media/oem-provisioning.\n\nOtherwise, you will be prompted to enter them several times manually.\nYou won't either have an external backup of those information in case\nthey were forgotten.\n\nContinue with one time OEM Reownership information provisioning?" 30 90) then
           for to_provision in oem_gpg_Admin_PIN oem_gpg_User_PIN oem_gpg_real_name oem_gpg_email oem_gpg_comment oem_luks_actual_Disk_Recovery_Key oem_luks_new_Disk_Recovery_Key oem_luks_Disk_Unlock_Key oem_TPM_Owner_Password
           do
             provisioned_value=$(eval echo \$$to_provision)
