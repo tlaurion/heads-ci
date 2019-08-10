@@ -55,7 +55,7 @@ enable_sdcard()
         || die "mmc_block: module load failed"
       fi
       if ! lsmod | grep -q cqhci; then
-        busybox insmod /lib/modules/cqhci.ko \
+        insmod /lib/modules/cqhci.ko \
         || die "cqhci: module load failed"
       fi
       if ! lsmod | grep -q sdhci; then
