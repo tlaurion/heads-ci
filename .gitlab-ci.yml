@@ -5,7 +5,7 @@ stages:
 
 build:
   stage: build
-  retry: 99
+  retry: 2
   cache:
     paths:
       - ./
