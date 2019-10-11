@@ -328,7 +328,7 @@ read_oem_files()
   fi
  
   if ! [ $(grep "no_automatic_provisioning" /boot/oem) ]; then
-    echo "Mounting memory card reader drive provision OEM reownership from /media/oem-provisioning..."
+    echo "Mounting sdcard to provision OEM reownership from /media/oem-provisioning..."
     mount-sdcard || notify "Unable to mount sdcard from memory card reader. Make sure the card is pushed in the expension slot and type Enter to continue."
     mount-sdcard || $(mount -o remount,rw /boot && echo "no_automatic_provisioning" >> /boot/oem && mount -o remount,ro /boot && reboot)
     if [ -e /media/oem-provisioning ]; then
