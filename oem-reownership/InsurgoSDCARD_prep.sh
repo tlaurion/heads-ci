@@ -61,7 +61,8 @@ sudo mount /dev/mapper/Insurgo /mnt/Insurgo
 #do stuff related to order number to sdcard. I move files around from sys-usb in QubesOS so ORDER related directories here contain original firmware
 sudo mkdir -p /mnt/Insurgo/$2_FirmwareFiles
 sudo rsync -ah --progress ./$2/* /mnt/Insurgo/$2_FirmwareFiles/
-sudo mv ./oem-provisioning.generated /mnt/Insurgo/oem-provisioning
+sudo cp ./oem-provisioning.generated /mnt/Insurgo/oem-provisioning
+sudo cp ./oem-provisioning.generated ./$2/oem-provisioning
 
 sudo umount /mnt/Insurgo
 sudo cryptsetup luksClose /dev/mapper/Insurgo
