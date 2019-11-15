@@ -38,9 +38,9 @@ EOF
 
 #LUKS container is in first partition of the disk passed in argument from command line (eg: /dev/sda)
 #We create a container in partition 1 with passphrase contained in keyfile (without linefeed in file!!!)
-sudo cryptsetup luksFormat --type luks1 $11 -q -v --force-password --key-file ./Insurgo_OEM_Passphrase
+sudo cryptsetup luksFormat --type luks1 $11 -q -v --force-password --key-file ./OEM_SSD_sdcard_Disks_Recovery_Key_Passphrase
 #We open that container with keyfile in devmapper named Insurgo
-sudo cryptsetup luksOpen $11 Insurgo -q --key-file ./Insurgo_OEM_Passphrase
+sudo cryptsetup luksOpen $11 Insurgo -q --key-file ./OEM_SSD_sdcard_Disks_Recovery_Key_Passphrase
 
 #We format into ext4 device that devmapped partition named Insurgo above
 sudo mkfs.ext4 -F /dev/mapper/Insurgo
@@ -70,8 +70,8 @@ sudo cryptsetup luksClose /dev/mapper/Insurgo
 #We mount second partition prior to filling it with wanted stuff
 sudo mount $12 /mnt/Public
 #Here we copy isos and associated asc signed files in mountpoint
-sudo rsync -ah --progress /home/user/Downloads/OEM_SDCARD_PUBLIC/*.iso* /mnt/Public/
+sudo rsync -ah --progress ./OEM_SDCARD_PUBLIC/*.iso* /mnt/Public/
 sudo sync
-sudo cp /home/user/QubesIncoming/Insurgo/Certified_QubesOS_Flashed_Heads_Firmware_From_Gitlab_CI.zip /mnt/Public/
+sudo cp -r ./PrivacyBeastX230-QubesOS-Certified-ROMS /mnt/Public/
 #We unmount used mountpoint
 sudo umount /mnt/Public
