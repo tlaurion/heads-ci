@@ -56,7 +56,7 @@ while true; do
 
     BOTTOM_BACKEDUP_AND_FLASHED=0
     while [ $BOTTOM_BACKEDUP_AND_FLASHED != 1 ]; do
-      ./subscripts/bottom_EN25QH64.sh  || ./subscripts/bottom_MX25L6405.sh
+      ./subscripts/bottom_EN25QH64.sh  || ./subscripts/bottom_MX25L6405.sh || ./subscripts/bottom_N25Q0643E.sh 
       if [ $? -eq 0 ]; then
         BOTTOM_BACKEDUP_AND_FLASHED=1
       fi
