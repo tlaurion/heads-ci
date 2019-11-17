@@ -1,0 +1,2 @@
+#MX25L3273E
+echo -e "Backuping MX25L3273E top SPI flash into top.rom\n" && sudo flashrom -r ./top.rom --programmer ch341a_spi -c MX25L3273E && echo -e "Verifying MX25L3273E top SPI flash\n" && sudo flashrom -v ./top.rom --programmer ch341a_spi -c MX25L3273E && echo -e "Flashing MX25L3273E top SPI flash\n" && sudo flashrom -w  ./PrivacyBeastX230-QubesOS-Certified-ROMS/x230-flash-libremkey.rom  --programmer ch341a_spi -c MX25L3273E 

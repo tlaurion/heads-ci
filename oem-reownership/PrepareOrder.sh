@@ -38,7 +38,7 @@ while true; do
     TOP_BACKEDUP_AND_FLASHED=0
     while [ $TOP_BACKEDUP_AND_FLASHED != 1 ]; do
       echo "Launching ./subscripts/top.sh script"
-      ./subscripts/top.sh
+      ./subscripts/top_MX25L3273E.sh  || ./subscripts/top_N25Q0323E.sh
       if [ $? -eq 0 ]; then
         TOP_BACKEDUP_AND_FLASHED=1
         echo "Backup and flashing of top SPI flash successful."
