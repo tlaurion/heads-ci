@@ -12,7 +12,6 @@
 # 6- Boot your newly received hardware with USB drive connected.
 # 7- Enjoy!
 #
-source ./oem.information
 echo "#PLEASE KEEP THIS FILE IN A SAFE PLACE FOR FURTHER REFERENCE. " > ./oem-provisioning.generated
 echo "#" >> ./oem-provisioning.generated
 echo "#############" >> ./oem-provisioning.generated
