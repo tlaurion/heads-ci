@@ -132,7 +132,7 @@ if [ -e /boot/oem ];then
       #Read /media/oem-provisioning file once to read provisioned secrets
       read_oem_files
     else
-      notify "You must run the Reownership Wizard from a safe place with power outlet connected. OEM Reownership will require around an hour. Sytem will now power off."
+      notify "You must run the Reownership Wizard from a safe place with power outlet connected. OEM Reownership will require around an hour. System will now power off."
       poweroff
     fi
   fi
