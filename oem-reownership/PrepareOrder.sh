@@ -18,7 +18,7 @@ clear
 #We export OEM provisioning information
 source ./oem.information
 #We extract Disk Recovery Key provisioned in oem.information so it is usable as a file in SdCardPrep script
-echo -e $oem_luks_actual_Disk_Recovery_Key > ./OEM_SSD_sdcard_Disks_Recovery_Key_Passphrase 
+echo -n "$oem_luks_actual_Disk_Recovery_Key" > ./OEM_SSD_sdcard_Disks_Recovery_Key_Passphrase 
 
 if [ ! -e ./OEM_SDCARD_PUBLIC ]; then
   mkdir -p OEM_SDCARD_PUBLIC
