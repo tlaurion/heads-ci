@@ -7,7 +7,7 @@
 #     - TODO: insert glue to download latest verified GitLabCi build's artifact, now statically
 if [ -z $1 ]; then
   clear
-  echo -e "\nPlease launch this script as:\n\n$0 /dev/sda\nWhere sda is the sdcard drive expected to be provisioned with:\n 1-Encrypted partition with disk passphrase specified under ./OEM_SSD_sdcard_Disks_Recovery_Key_Passphrase: original roms, oem-provisioning file\n 2-ISOs and accompanying signature files..."
+  echo -e "\nPlease launch this script as:\n\n$0 /dev/sda\nWhere sda is the sdcard drive expected to be provisioned with:\n 1-Encrypted partition with disk passphrase specified under ./oem.information: original roms, oem-provisioning file\n 2-ISOs and accompanying signature files..."
   echo -e "\nNote that external disks in QubesOS are detected as sda sdb sdc, while internal disks are xvda xvdb xvdc.."
   echo -e "You can safely pass /dev/sda argument to this script, as long as no external drive is passed to this AppVM."
   exit 1
