@@ -26,6 +26,8 @@ warn() {
 	echo >&2 "$*";
 }
 
+calc(){ awk "BEGIN { print "$*" }"; }
+
 recovery() {
 	echo >&2 "!!!!! $*"
 
