@@ -82,11 +82,12 @@ while true; do
           && sudo flashrom -v ./$ORDER/top.rom --programmer ch341a_spi -c $SPI_CHIP \
         && echo -e "\nFlashing top $SPI_CHIP SPI flash chip...\n" \
           && sudo flashrom -w  ./PrivacyBeastX230-QubesOS-Certified-ROMS/x230-flash-libremkey.rom  --programmer ch341a_spi -c $SPI_CHIP
+        if [ $? -eq 0 ]; then
+          TOP_BACKEDUP_AND_FLASHED=1
+          echo -e "\nBackup and flashing of top $SPI_CHIP SPI flash successful.\n"
+          break
+        fi
       done
-      if [ $? -eq 0 ]; then
-        TOP_BACKEDUP_AND_FLASHED=1
-        echo -e "\nBackup and flashing of top SPI flash successful.\n"
-      fi
     done
   else
     echo -e "\n$ORDER/top.rom was found. If this is artifact of a prior unfinished backup, you might want to CTRL-C this and cleanup before continuing..."
@@ -98,26 +99,28 @@ while true; do
     echo -e "\nChange clip to bottom SPI flash chip and press Enter...\n"
     read
     
-    #As of right now, the following bottom SPI_CHIPS have been seen in the while.
-    for SPI_CHIP in "EN25QH64" "MX25L6405" "N25Q064..3E"; do
-      echo "Backuping bottom $SPI_CHIP SPI flash chip into $ORDER/bottom.rom..." \
-          && sudo flashrom -r ./$ORDER/bottom.rom --programmer ch341a_spi -c $SPI_CHIP \
-      && echo "Verifying bottom $SPI_CHIP SPI flash chip..." \
-        && sudo flashrom -v ./$ORDER/bottom.rom --programmer ch341a_spi -c $SPI_CHIP \
-      && echo "Unlocking ROM descriptor..." \
-        && /home/user/heads/build/coreboot-4.8.1/util/ifdtool/ifdtool -u ./$ORDER/bottom.rom \
-      && echo "Neutering+Deactivating ME..." \
-        && python /home/user/me_cleaner/me_cleaner.py -r -t -d -S -O ./$ORDER/cleaned_me.rom \
-        ./$ORDER/bottom.rom.new --extract-me ./$ORDER/extracted_me.rom \
-      && echo "Flashing back Neutered+Deactivated ME in bottom $SPI_CHIP SPI flash chip..." \
-        && sudo flashrom -w ./$ORDER/cleaned_me.rom --programmer ch341a_spi -c $SPI_CHIP
-    done
     BOTTOM_BACKEDUP_AND_FLASHED=0
     while [ $BOTTOM_BACKEDUP_AND_FLASHED != 1 ]; do
+      #As of right now, the following bottom SPI_CHIPS have been seen in the while.
+      for SPI_CHIP in "EN25QH64" "MX25L6405" "N25Q064..3E"; do
+        echo "Backuping bottom $SPI_CHIP SPI flash chip into $ORDER/bottom.rom..." \
+          && sudo flashrom -r ./$ORDER/bottom.rom --programmer ch341a_spi -c $SPI_CHIP \
+        && echo "Verifying bottom $SPI_CHIP SPI flash chip..." \
+          && sudo flashrom -v ./$ORDER/bottom.rom --programmer ch341a_spi -c $SPI_CHIP \
+        && echo "Unlocking ROM descriptor..." \
+          && /home/user/heads/build/coreboot-4.8.1/util/ifdtool/ifdtool -u ./$ORDER/bottom.rom \
+        && echo "Neutering+Deactivating ME..." \
+          && python /home/user/me_cleaner/me_cleaner.py -r -t -d -S -O ./$ORDER/cleaned_me.rom \
+            ./$ORDER/bottom.rom.new --extract-me ./$ORDER/extracted_me.rom \
+        && echo "Flashing back Neutered+Deactivated ME in bottom $SPI_CHIP SPI flash chip..." \
+          && sudo flashrom -w ./$ORDER/cleaned_me.rom --programmer ch341a_spi -c $SPI_CHIP
       
-      if [ $? -eq 0 ]; then
-        BOTTOM_BACKEDUP_AND_FLASHED=1
-      fi
+        if [ $? -eq 0 ]; then
+          BOTTOM_BACKEDUP_AND_FLASHED=1
+          echo -e "\nBackup and flashing of bottom $SPI_CHIP SPI flash successful.\n"
+          break
+        fi
+      done
     done
   else
     echo -e "\n$ORDER/bottom.rom was found. If this is artifact of a prior unfinished backup, you might want to CTRL-C this and cleanup before continuing..."
